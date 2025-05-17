@@ -1,0 +1,53 @@
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content})}">
+    <th:block th:fragment="content">
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card shadow-lg rounded-4">
+                        <div class="card-header bg-primary text-white text-center">
+                            <h4 class="mb-0">회원가입</h4>
+                        </div>
+                        <div class="card-body p-4">
+                            <form th:action="@{/signup}" method="post" th:object="${memberDTO}">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">이메일</label>
+                                    <input type="email" th:field="*{email}" class="form-control" id="email"
+                                           placeholder="example@email.com" required>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">이메일 오류</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="nickname" class="form-label">닉네임</label>
+                                    <input type="text" th:field="*{nickname}" class="form-control" id="nickname"
+                                           placeholder="닉네임을 입력하세요" required>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}">닉네임 오류</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">비밀번호</label>
+                                    <input type="password" th:field="*{password}" class="form-control" id="password"
+                                           placeholder="비밀번호" required>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">비밀번호 오류</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="confirmPassword" class="form-label">비밀번호 재입력</label>
+                                    <input type="password" th:field="*{confirmPassword}" class="form-control" id="confirmPassword"
+                                           placeholder="비밀번호 재입력" required>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}">비밀번호가 일치하지 않습니다.</div>
+                                </div>
+
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">가입하기</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="card-footer text-muted text-center">
+                            이미 계정이 있으신가요? <a th:href="@{/login}" class="text-decoration-none">로그인</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+</th:block>
