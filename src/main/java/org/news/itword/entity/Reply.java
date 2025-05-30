@@ -1,12 +1,12 @@
 package org.news.itword.entity;
 
-
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Builder
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,5 +27,12 @@ public class Reply extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private News news;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Reply parentReply;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "parentReply", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reply> childReplies = new ArrayList<>();
 
 }

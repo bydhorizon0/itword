@@ -31,7 +31,7 @@ public class News extends BaseEntity {
     private Member member;
 
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<NewsImage> images = new ArrayList<>();
+    private List<NewsImage> newsImages = new ArrayList<>();
 
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reply> replies = new ArrayList<>();

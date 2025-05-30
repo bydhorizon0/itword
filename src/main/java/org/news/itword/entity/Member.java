@@ -4,7 +4,9 @@ package org.news.itword.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -22,17 +24,25 @@ public class Member extends BaseEntity {
 
     private String nickname;
 
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    private String password;
+
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "tbl_member_roles", joinColumns = @JoinColumn(name = "member_id"))
     @Enumerated(value = EnumType.ORDINAL)
     @Builder.Default
     private Set<MemberRole> roles = new HashSet<>();
 
-    @Column(unique = true, nullable = false)
-    private String email;
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<News> newsList = new ArrayList<>();
 
-    @Column(nullable = false)
-    private String password;
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reply> replies = new ArrayList<>();
 
     public void addRole(MemberRole role) {
         roles.add(role);
