@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@ToString(exclude = {"member", "news"})
+@ToString(exclude = {"member", "news", "parentReply", "childReplies"})
 @Table(name = "tbl_replies")
 public class Reply extends BaseEntity {
 
