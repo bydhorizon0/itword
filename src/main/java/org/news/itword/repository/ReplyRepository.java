@@ -1,4 +1,7 @@
 package org.news.itword.repository;
 
-public interface ReplyRepository {
+import org.news.itword.entity.Reply;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ReplyRepository extends JpaRepository<Reply, Long>, ReplyRepositoryCustom {
 }
