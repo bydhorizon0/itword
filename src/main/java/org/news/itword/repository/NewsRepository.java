@@ -1,4 +1,7 @@
 package org.news.itword.repository;
 
-public interface NewsRepository {
+import org.news.itword.entity.News;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface NewsRepository extends JpaRepository<News, Long>, NewsRepositoryCustom {
 }
