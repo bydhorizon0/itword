@@ -22,7 +22,7 @@ class MemberRepositoryTest {
 
     @Test
     public void testInsertMembers() {
-        IntStream.range(0, 50).forEach(i -> {
+        IntStream.range(1, 50).forEach(i -> {
             Member member = Member.builder()
                     .email("user" + i + "@gmail.com")
                     .password(passwordEncoder.encode("123"))
@@ -32,8 +32,12 @@ class MemberRepositoryTest {
             member.addRole(MemberRole.USER);
 
             if (i > 40) {
+                member.addRole(MemberRole.STAFF);
+            }
+            if (i > 44) {
                 member.addRole(MemberRole.ADMIN);
             }
+
             memberRepository.save(member);
         });
     }
