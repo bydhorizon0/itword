@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@ToString(exclude = {"member", "news", "parentReply", "childReplies"})
+@ToString(exclude = {"member", "movie", "parentReply", "childReplies"})
 @Table(name = "tbl_replies")
 public class Reply extends BaseEntity {
 
@@ -26,7 +26,7 @@ public class Reply extends BaseEntity {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private News news;
+    private Movie movie;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Reply parentReply;

@@ -22,7 +22,7 @@ class MemberRepositoryTest {
 
     @Test
     public void testInsertMembers() {
-        IntStream.range(1, 50).forEach(i -> {
+        IntStream.range(1, 51).forEach(i -> {
             Member member = Member.builder()
                     .email("user" + i + "@gmail.com")
                     .password(passwordEncoder.encode("123"))
