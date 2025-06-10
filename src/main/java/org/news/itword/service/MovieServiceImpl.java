@@ -19,7 +19,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public PageResultDTO<MovieDTO> getMovies(PageRequestDTO requestDTO) {
-        Page<MovieDTO> movies = movieRepository.findAllMovies(requestDTO.getPageable(Sort.by("id").descending()));
+        Page<MovieDTO> movies = movieRepository.findAllMovies(requestDTO.getKeyword(), requestDTO.getSearchType(), requestDTO.getPageable(Sort.by("id").descending()));
 
         return new PageResultDTO<>(movies);
     }

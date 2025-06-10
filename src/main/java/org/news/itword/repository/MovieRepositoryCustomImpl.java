@@ -1,7 +1,7 @@
 package org.news.itword.repository;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -22,16 +22,28 @@ public class MovieRepositoryCustomImpl implements MovieRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<MovieDTO> findAllMovies(Pageable pageable) {
+    public Page<MovieDTO> findAllMovies(String keyword, String searchType, Pageable pageable) {
         QMovie movie = QMovie.movie;
         QMovieImage movieImage = QMovieImage.movieImage;
         QReply reply = QReply.reply;
+
+        // 검색 조건 빌더
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            if ("title".equalsIgnoreCase(searchType)) {
+                builder.and(movie.title.containsIgnoreCase(keyword));
+            } else if ("content".equalsIgnoreCase(searchType)) {
+                builder.and(movie.content.containsIgnoreCase(keyword));
+            }
+        }
 
         List<Tuple> fetch = queryFactory.select(movie, movieImage, reply.count())
                 .from(movie)
                 .leftJoin(movie.movieImages, movieImage)
                 .fetchJoin()
                 .leftJoin(movie.replies, reply)
+                .where(builder)
                 .groupBy(movie, movieImage)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

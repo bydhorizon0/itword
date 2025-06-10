@@ -72,7 +72,7 @@ class MovieRepositoryTest {
     public void findAllMovies() {
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());
 
-        Page<MovieDTO> movies = movieRepository.findAllMovies(pageable);
+        Page<MovieDTO> movies = movieRepository.findAllMovies("", "", pageable);
 
         for (MovieDTO movie : movies) {
             System.out.println(movie);

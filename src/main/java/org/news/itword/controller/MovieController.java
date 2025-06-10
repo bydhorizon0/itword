@@ -23,6 +23,7 @@ public class MovieController {
     public String movieList(PageRequestDTO requestDTO, Model model) {
         PageResultDTO<MovieDTO> movies = movieService.getMovies(requestDTO);
         model.addAttribute("movies", movies);
+        model.addAttribute("requestDTO", requestDTO);
 
         return "/movie/index";
     }
