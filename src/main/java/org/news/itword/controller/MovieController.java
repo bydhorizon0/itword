@@ -4,9 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.news.itword.dto.MovieDTO;
 import org.news.itword.dto.PageRequestDTO;
-import org.news.itword.repository.MovieRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
+import org.news.itword.dto.PageResultDTO;
+import org.news.itword.service.MovieService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,15 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Log4j2
 @RequiredArgsConstructor
-@RequestMapping("/movie")
+@RequestMapping("/movies")
 @Controller
 public class MovieController {
 
-    private final MovieRepository movieRepository;
+    private final MovieService movieService;
 
     @GetMapping
     public String movieList(PageRequestDTO requestDTO, Model model) {
-        Page<MovieDTO> movies = movieRepository.findAllMovies(requestDTO.getPageable(Sort.by("id").descending()));
+        PageResultDTO<MovieDTO> movies = movieService.getMovies(requestDTO);
         model.addAttribute("movies", movies);
 
         return "/movie/index";
