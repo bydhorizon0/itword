@@ -18,6 +18,6 @@ public class MovieImageDTO {
     private String path;
 
     public String getImageURL() {
-        return URLEncoder.encode(path + "/" + imgName, StandardCharsets.UTF_8);
+        return "/" + path + "/" + imgName;
     }
 }
