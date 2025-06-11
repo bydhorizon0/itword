@@ -1,0 +1,48 @@
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content})}">
+  <th:block th:fragment="content">
+    <div class="container py-5">
+      <h1 class="mb-4" th:text="${movieDetailDTO.title}">영화 제목</h1>
+
+      <div class="mb-4">
+        <span class="badge bg-secondary me-2">
+          등록일: <span th:text="${#temporals.format(movieDetailDTO.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+        </span>
+        <span class="badge bg-secondary">
+          수정일: <span th:text="${#temporals.format(movieDetailDTO.updatedAt, 'yyyy-MM-dd HH:mm')}"></span>
+        </span>
+      </div>
+
+      <div class="mb-4">
+        <p class="lead" th:text="${movieDetailDTO.content}">영화 소개</p>
+      </div>
+
+      <div class="row mb-5" th:if="${!#lists.isEmpty(movieDetailDTO.movieImageDTOList)}">
+        <div class="col-md-4" th:each="img : ${movieDetailDTO.movieImageDTOList}">
+          <img th:src="${img.imageURL}"
+               class="img-fluid rounded shadow-sm mb-3"
+               alt="Movie Image"/>
+        </div>
+      </div>
+
+      <hr/>
+
+      <h4 class="mb-3">📝 댓글</h4>
+      <div class="list-group">
+        <div class="list-group-item" th:each="reply : ${movieDetailDTO.replyDTOList}">
+          <div class="d-flex justify-content-between">
+            <strong th:text="${reply.memberEmail}">user@example.com</strong>
+            <small class="text-muted" th:text="${#temporals.format(reply.createdAt, 'yyyy-MM-dd HH:mm')}"></small>
+          </div>
+          <div class="mt-2" th:text="${reply.content}">댓글 내용</div>
+          <div th:if="${reply.parentReplyId != null}" class="mt-1 text-muted small">
+            ⤷ 부모 댓글 ID: <span th:text="${reply.parentReplyId}"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <a th:href="@{/movies}" class="btn btn-outline-secondary">← 목록으로</a>
+      </div>
+    </div>
+  </th:block>
+</th:block>

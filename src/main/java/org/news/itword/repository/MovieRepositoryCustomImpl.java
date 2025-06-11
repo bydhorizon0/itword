@@ -6,10 +6,13 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.news.itword.dto.MovieDTO;
+import org.news.itword.dto.MovieDetailDTO;
+import org.news.itword.dto.ReplyDTO;
 import org.news.itword.entity.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +25,7 @@ public class MovieRepositoryCustomImpl implements MovieRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<MovieDTO> findAllMovies(String keyword, String searchType, Pageable pageable) {
+    public Page<MovieDTO> getAllMovies(String keyword, String searchType, Pageable pageable) {
         QMovie movie = QMovie.movie;
         QMovieImage movieImage = QMovieImage.movieImage;
         QReply reply = QReply.reply;
@@ -72,8 +75,46 @@ public class MovieRepositoryCustomImpl implements MovieRepositoryCustom {
 
         Long total = queryFactory.select(movie.count())
                 .from(movie)
+                .where(builder)
                 .fetchOne();
 
         return new PageImpl<>(movieDTOList, pageable, total);
+    }
+
+    @Override
+    public MovieDetailDTO getMovie(long id) {
+        QMovie movie = QMovie.movie;
+        QMovieImage movieImage = QMovieImage.movieImage;
+
+        Tuple tuple = queryFactory.select(movie, movieImage)
+                .from(movie)
+                .leftJoin(movie.movieImages, movieImage)
+                .fetchJoin()
+                .where(movie.id.eq(id))
+                .fetchOne();
+
+        Movie m = tuple.get(0, Movie.class);
+        MovieImage mi = tuple.get(1, MovieImage.class);
+
+        QReply reply = QReply.reply;
+        QMember member = QMember.member;
+
+        List<Reply> replies = queryFactory.selectFrom(reply)
+                .join(reply.member, member).fetchJoin()
+                .where(reply.movie.id.eq(id))
+                .fetch();
+
+        List<ReplyDTO> replyDTOList = replies.stream().map(this::replyToDTO)
+                .toList();
+
+        return MovieDetailDTO.builder()
+                .id(m.getId())
+                .title(m.getTitle())
+                .content(m.getContent())
+                .createdAt(m.getCreatedAt())
+                .updatedAt(m.getUpdatedAt())
+                .movieImageDTOList(List.of(movieImageToDTO(mi)))
+                .replyDTOList(replyDTOList)
+                .build();
     }
 }

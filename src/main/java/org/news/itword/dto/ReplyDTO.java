@@ -16,6 +16,5 @@ public class ReplyDTO {
     private String content;
     private LocalDateTime createdAt, updatedAt;
     private Long parentReplyId;
-    private Long newsId;
     private String memberEmail;
 }

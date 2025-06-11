@@ -44,7 +44,7 @@
 
 						<div class="card-body">
 							<h5 class="card-title" th:text="${movie.title}">News title</h5>
-							<a href="#" class="btn btn-outline-primary btn-sm">Read more</a>
+							<a th:href="@{/movies/detail(id=${movie.id})}" class="btn btn-outline-primary btn-sm">Read more</a>
 						</div>
 						<div class="card-footer text-muted small">
 							<span th:text="${#temporals.format(movie.createdAt, 'yyyy-MM-dd')}"></span>
@@ -56,17 +56,17 @@
 			<nav aria-label="Page navigation" class="mt-5">
 				<ul class="pagination justify-content-center shadow-sm rounded">
 					<li class="page-item" th:classappend="${!movies.prev ? 'disabled' : ''}">
-						<a class="page-link" th:href="@{/movies(page=${movies.start} - 1)}" aria-label="Previous">
+						<a class="page-link" th:href="@{/movies(page=${movies.start} - 1, keyword=${requestDTO.keyword}, searchType=${requestDTO.searchType})}" aria-label="Previous">
 							<span aria-hidden="true">&laquo;</span>
 						</a>
 					</li>
 
 					<li class="page-item" th:each="page : ${movies.pageList}" th:classappend="${page == movies.page ? 'active' : ''}">
-						<a class="page-link" th:href="@{/movies(page=${page})}" th:text="${page}">1</a>
+						<a class="page-link" th:href="@{/movies(page=${page}, keyword=${requestDTO.keyword}, searchType=${requestDTO.searchType})}" th:text="${page}">1</a>
 					</li>
 
 					<li class="page-item" th:classappend="${!movies.next ? 'disabled' : ''}">
-						<a class="page-link" th:href="@{/movies(page=${movies.end} + 1)}" aria-label="Next">
+						<a class="page-link" th:href="@{/movies(page=${movies.end} + 1, keyword=${requestDTO.keyword}, searchType=${requestDTO.searchType})}" aria-label="Next">
 							<span aria-hidden="true">&raquo;</span>
 						</a>
 					</li>

@@ -3,6 +3,7 @@ package org.news.itword.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.news.itword.dto.MovieDTO;
+import org.news.itword.dto.MovieDetailDTO;
 import org.news.itword.dto.PageRequestDTO;
 import org.news.itword.dto.PageResultDTO;
 import org.news.itword.repository.MovieRepository;
@@ -19,8 +20,13 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public PageResultDTO<MovieDTO> getMovies(PageRequestDTO requestDTO) {
-        Page<MovieDTO> movies = movieRepository.findAllMovies(requestDTO.getKeyword(), requestDTO.getSearchType(), requestDTO.getPageable(Sort.by("id").descending()));
+        Page<MovieDTO> movies = movieRepository.getAllMovies(requestDTO.getKeyword(), requestDTO.getSearchType(), requestDTO.getPageable(Sort.by("id").descending()));
 
         return new PageResultDTO<>(movies);
+    }
+
+    @Override
+    public MovieDetailDTO findMovieById(Long id) {
+        return movieRepository.getMovie(id);
     }
 }

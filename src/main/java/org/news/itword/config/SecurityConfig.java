@@ -26,10 +26,15 @@ public class SecurityConfig {
                 .formLogin(form -> {
                     form.loginPage("/login")
                             .loginProcessingUrl("/login")
-                            .defaultSuccessUrl("/movies");
+                            // alwaysUse에 true를 넣지 않으면 로그인 전의 요청 URL로 이동한다.
+                            // 특정 페이지로만 강제 이동하고 싶을 때 사용
+                            .defaultSuccessUrl("/movies", true)
+                            .permitAll();
                 })
                 .logout(logout -> {
-
+                    logout.logoutUrl("/logout")
+                            .logoutSuccessUrl("/login")
+                            .permitAll();
                 })
                 .build();
     }

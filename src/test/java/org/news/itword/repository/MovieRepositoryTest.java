@@ -2,6 +2,7 @@ package org.news.itword.repository;
 
 import org.junit.jupiter.api.Test;
 import org.news.itword.dto.MovieDTO;
+import org.news.itword.dto.MovieDetailDTO;
 import org.news.itword.entity.Movie;
 import org.news.itword.entity.MovieImage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.context.TestPropertySource;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +21,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestPropertySource(properties = "spring.jpa.properties.hibernate.default_batch_fetch_size=1000") // 옵션 적용
 @SpringBootTest
 class MovieRepositoryTest {
 
@@ -72,11 +75,18 @@ class MovieRepositoryTest {
     public void findAllMovies() {
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());
 
-        Page<MovieDTO> movies = movieRepository.findAllMovies("", "", pageable);
+        Page<MovieDTO> movies = movieRepository.getAllMovies("", "", pageable);
 
         for (MovieDTO movie : movies) {
             System.out.println(movie);
         }
+    }
+
+    @Test
+    public void getMovie() {
+        MovieDetailDTO movie = movieRepository.getMovie(7L);
+
+        System.out.println(movie);
     }
 
 }
