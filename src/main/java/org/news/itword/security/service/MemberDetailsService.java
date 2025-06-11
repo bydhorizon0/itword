@@ -1,4 +1,4 @@
-package org.news.itword.service;
+package org.news.itword.security.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
