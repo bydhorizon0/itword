@@ -20,10 +20,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(CsrfConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
-                    auth.anyRequest().permitAll();
+                    auth.requestMatchers("/css/**", "/js/**", "/images/**", "/lib/**", "/signup", "/login", "/logout").permitAll()
+                            .anyRequest().authenticated();
                 })
                 .formLogin(form -> {
-
+                    form.loginPage("/login")
+                            .loginProcessingUrl("/login")
+                            .defaultSuccessUrl("/movies");
                 })
                 .logout(logout -> {
 

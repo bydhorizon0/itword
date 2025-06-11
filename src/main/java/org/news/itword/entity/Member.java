@@ -14,7 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@ToString(exclude = "roles")
+@ToString(exclude = {"roles", "replies"})
 @Table(name = "tbl_members")
 public class Member extends BaseEntity {
 
