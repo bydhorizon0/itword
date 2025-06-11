@@ -13,6 +13,7 @@ spring:
         format_sql: true
         default_batch_fetch_size: 1000
     hibernate:
+      # !!! 운영에서는 none 또는 validate 만 사용해야한다.
       ddl-auto: update
 
 server:
