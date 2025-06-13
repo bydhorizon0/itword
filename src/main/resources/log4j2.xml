@@ -4,7 +4,7 @@
     <!--    해당 설정파일에서 사용하는 프로퍼티-->
     <Properties>
         <Property name="PATH">logs</Property>
-        <Property name="NAME">Crawler</Property>
+        <Property name="NAME">log</Property>
         <Property name="COLOR_PATTERN">%style{%d{yyyy/MM/dd HH:mm:ss,SSS}}{cyan} %highlight{[%-5p]}{FATAL=bg_red, ERROR=red, INFO=green, DEBUG=blue}  [%C] %style{[%t]}{yellow}- %m%n -</Property>
         <Property name="DEFAULT_PATTERN">[%d{yyyy-MM-dd HH:mm:ss.SSS}] %5p ${sys:PID} --- [%15.15t] %-40.40c{1.} : %m%n%xwEx</Property>
     </Properties>
