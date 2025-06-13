@@ -2,6 +2,11 @@ package org.news.itword.repository;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.EnumExpression;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -14,9 +19,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Log4j2
@@ -85,17 +89,38 @@ public class MovieRepositoryCustomImpl implements MovieRepositoryCustom {
     public MovieDetailDTO getMovie(long id) {
         QMovie movie = QMovie.movie;
         QMovieImage movieImage = QMovieImage.movieImage;
+        QMovieRating movieRating = QMovieRating.movieRating;
 
-        Tuple tuple = queryFactory.select(movie, movieImage)
+        // 평균 별점
+        JPQLQuery<Double> avgSubquery = JPAExpressions.select(movieRating.score.avg())
+                .from(movieRating)
+                .where(movieRating.movie.id.eq(id));
+
+        // 별점 개수
+        JPQLQuery<Long> countSubquery = JPAExpressions.select(movieRating.id.count())
+                .from(movieRating)
+                .where(movieRating.movie.id.eq(id));
+
+        Tuple tuple = queryFactory.select(movie, movieImage, avgSubquery, countSubquery)
                 .from(movie)
                 .leftJoin(movie.movieImages, movieImage)
-                .fetchJoin()
                 .where(movie.id.eq(id))
                 .fetchOne();
 
         Movie m = tuple.get(0, Movie.class);
         MovieImage mi = tuple.get(1, MovieImage.class);
+        double avgRating = tuple.get(2, Double.class);
+        long ratingCount = tuple.get(3, Long.class);
 
+        // 영화 장르 조회
+        QMovieGenre movieGenre = QMovieGenre.movieGenre;
+        List<MovieGenreType> genreTypeList = queryFactory.select(movieGenre.genre)
+                .from(movieGenre)
+                .join(movieGenre.movie, movie)
+                .where(movieGenre.movie.id.eq(id))
+                .fetch();
+
+        // 영화 댓글들 조회
         QReply reply = QReply.reply;
         QMember member = QMember.member;
 
@@ -113,7 +138,15 @@ public class MovieRepositoryCustomImpl implements MovieRepositoryCustom {
                 .content(m.getContent())
                 .createdAt(m.getCreatedAt())
                 .updatedAt(m.getUpdatedAt())
+                .mainGenre(genreTypeList.getFirst())
+                .subGenres(
+                        genreTypeList.stream()
+                                .skip(1)
+                                .toList()
+                )
                 .movieImageDTOList(List.of(movieImageToDTO(mi)))
+                .averageRating(avgRating)
+                .ratingCount(ratingCount)
                 .replyDTOList(replyDTOList)
                 .build();
     }
