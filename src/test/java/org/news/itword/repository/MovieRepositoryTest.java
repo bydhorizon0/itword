@@ -3,8 +3,7 @@ package org.news.itword.repository;
 import org.junit.jupiter.api.Test;
 import org.news.itword.dto.MovieDTO;
 import org.news.itword.dto.MovieDetailDTO;
-import org.news.itword.entity.Movie;
-import org.news.itword.entity.MovieImage;
+import org.news.itword.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
@@ -12,12 +11,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.UUID;
+import java.util.*;
+import java.util.random.RandomGenerator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -68,6 +69,56 @@ class MovieRepositoryTest {
                     .build();
 
             movieImageRepository.save(movieImage);
+        }
+    }
+
+    @Transactional
+    @Rollback(value = false)
+    @Test
+    public void modifyMovies() {
+        List<Movie> movieList = movieRepository.findAll();
+        MovieGenreType[] genreTypes = MovieGenreType.values();
+
+        List<Member> memberList = memberRepository.findAll();
+
+        for (Movie movie : movieList) {
+            Member member = memberList.get(RandomGenerator.getDefault().nextInt(1, memberList.size()));
+
+            // 장르 3개 중복 없이 랜덤 선택
+            List<MovieGenreType> shuffled = new ArrayList<>(List.of(genreTypes));
+            Collections.shuffle(shuffled);
+
+            MovieRating rating = MovieRating.builder()
+                    .score(RandomGenerator.getDefault().nextInt(1, 6))
+                    .movie(movie)
+                    .member(member)
+                    .build();
+
+            MovieGenre mainGenre = MovieGenre.builder()
+                    .genre(shuffled.get(0))
+                    .main(true)
+                    .movie(movie)
+                    .build();
+
+            MovieGenre subGenre1 = MovieGenre.builder()
+                    .genre(shuffled.get(1))
+                    .main(false)
+                    .movie(movie)
+                    .build();
+
+            MovieGenre subGenre2 = MovieGenre.builder()
+                    .genre(shuffled.get(2))
+                    .main(false)
+                    .movie(movie)
+                    .build();
+
+            // 평점 추가
+            movie.addRating(rating);
+            member.addRating(rating);
+            // 장르 추가
+            movie.addGenre(mainGenre);
+            movie.addGenre(subGenre1);
+            movie.addGenre(subGenre2);
         }
     }
 

@@ -33,6 +33,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public final StringPath password = createString("password");
 
+    public final ListPath<MovieRating, QMovieRating> ratings = this.<MovieRating, QMovieRating>createList("ratings", MovieRating.class, QMovieRating.class, PathInits.DIRECT2);
+
     public final ListPath<Reply, QReply> replies = this.<Reply, QReply>createList("replies", Reply.class, QReply.class, PathInits.DIRECT2);
 
     public final SetPath<MemberRole, EnumPath<MemberRole>> roles = this.<MemberRole, EnumPath<MemberRole>>createSet("roles", MemberRole.class, EnumPath.class, PathInits.DIRECT2);

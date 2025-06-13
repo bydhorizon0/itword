@@ -3,15 +3,14 @@ package org.news.itword.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Builder
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@ToString(exclude = {"movieImages", "replies"})
+@ToString(exclude = {"genres", "ratings", "movieImages", "replies"})
 @Table(name = "tbl_movies")
 public class Movie extends BaseEntity {
 
@@ -23,6 +22,16 @@ public class Movie extends BaseEntity {
 
     private String content;
 
+    // 영화 장르 필드
+    @Builder.Default
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+    private SortedSet<MovieGenre> genres = new TreeSet<>();
+
+    // 별점 필드
+    @Builder.Default
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<MovieRating> ratings = new HashSet<>();
+
     @Builder.Default
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MovieImage> movieImages = new ArrayList<>();
@@ -31,4 +40,13 @@ public class Movie extends BaseEntity {
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reply> replies = new ArrayList<>();
 
+    public void addGenre(MovieGenre genre) {
+        genres.add(genre);
+        genre.setMovie(this);
+    }
+
+    public void addRating(MovieRating rating) {
+        ratings.add(rating);
+        rating.setMovie(this);
+    }
 }

@@ -14,7 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@ToString(exclude = {"roles", "replies"})
+@ToString(exclude = {"roles", "replies", "ratings"})
 @Table(name = "tbl_members")
 public class Member extends BaseEntity {
 
@@ -40,7 +40,16 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reply> replies = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MovieRating> ratings = new ArrayList<>();
+
     public void addRole(MemberRole role) {
         roles.add(role);
+    }
+
+    public void addRating(MovieRating rating) {
+        ratings.add(rating);
+        rating.setMember(this);
     }
 }

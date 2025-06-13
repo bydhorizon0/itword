@@ -27,9 +27,13 @@ public class QMovie extends EntityPathBase<Movie> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
+    public final SetPath<MovieGenre, QMovieGenre> genres = this.<MovieGenre, QMovieGenre>createSet("genres", MovieGenre.class, QMovieGenre.class, PathInits.DIRECT2);
+
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final ListPath<MovieImage, QMovieImage> movieImages = this.<MovieImage, QMovieImage>createList("movieImages", MovieImage.class, QMovieImage.class, PathInits.DIRECT2);
+
+    public final SetPath<MovieRating, QMovieRating> ratings = this.<MovieRating, QMovieRating>createSet("ratings", MovieRating.class, QMovieRating.class, PathInits.DIRECT2);
 
     public final ListPath<Reply, QReply> replies = this.<Reply, QReply>createList("replies", Reply.class, QReply.class, PathInits.DIRECT2);
 
