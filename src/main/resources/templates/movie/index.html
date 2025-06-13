@@ -20,7 +20,7 @@
 							name="searchType"
 							id="searchTitle"
 							value="title"
-							th:checked="${requestDTO.searchType == 'title' || requestDTO.searchType == null}"/>
+							th:checked="${requestDTO.searchType == 'title' or #strings.isEmpty(requestDTO.searchType)}"/>
 					<label class="form-check-label" for="searchTitle">Title</label>
 				</div>
 				<div class="form-check form-check-inline">
