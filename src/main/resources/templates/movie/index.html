@@ -37,8 +37,8 @@
 			<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 				<div class="col" th:each="movie : ${movies.getDtoList()}">
 					<div class="card h-100 shadow-sm">
-						<img th:if="${!#lists.isEmpty(movie.movieImageDTOList)}"
-							 th:src="${movie.movieImageDTOList[0].imageURL}"
+						<img th:if="${!#strings.isEmpty(movie.mainImagePath)}"
+							 th:src="${movie.mainImagePath}"
 							 class="card-img-top img-fluid"
 							alt="Movie Image"/>
 

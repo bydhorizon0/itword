@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -20,8 +18,7 @@ public class MovieDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    @Builder.Default
-    private List<MovieImageDTO> movieImageDTOList = new ArrayList<>();
+    private String mainImagePath;
 
     private Long replyCount;
 }

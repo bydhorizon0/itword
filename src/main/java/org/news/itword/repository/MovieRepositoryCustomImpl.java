@@ -59,20 +59,16 @@ public class MovieRepositoryCustomImpl implements MovieRepositoryCustom {
         List<MovieDTO> movieDTOList = new ArrayList<>();
         for (Tuple tuple : fetch) {
             Movie movieRes = tuple.get(0, Movie.class);
-            MovieImage movieImageRes = tuple.get(1, MovieImage.class);
+            MovieImage movieImageRes = Objects.requireNonNullElse(tuple.get(1, MovieImage.class), new MovieImage());
             Long replyCount = tuple.get(2, Long.class);
 
             MovieDTO movieDTO = MovieDTO.builder()
                     .id(movieRes.getId())
                     .title(movieRes.getTitle())
                     .content(movieRes.getContent())
-                    .movieImageDTOList(new ArrayList<>())
+                    .mainImagePath(movieImageRes.getPath())
                     .replyCount(replyCount)
                     .build();
-
-            if (Objects.nonNull(movieImageRes)) {
-                movieDTO.getMovieImageDTOList().add(movieImageToDTO(movieImageRes));
-            }
 
             movieDTOList.add(movieDTO);
         }
@@ -119,6 +115,7 @@ public class MovieRepositoryCustomImpl implements MovieRepositoryCustom {
                 .join(movieGenre.movie, movie)
                 .where(movieGenre.movie.id.eq(id))
                 .fetch();
+        MovieGenreType mainGenre = genreTypeList.isEmpty() ? MovieGenreType.EMPTY : genreTypeList.getFirst();
 
         // 영화 댓글들 조회
         QReply reply = QReply.reply;
@@ -138,7 +135,7 @@ public class MovieRepositoryCustomImpl implements MovieRepositoryCustom {
                 .content(m.getContent())
                 .createdAt(m.getCreatedAt())
                 .updatedAt(m.getUpdatedAt())
-                .mainGenre(genreTypeList.getFirst())
+                .mainGenre(mainGenre)
                 .subGenres(
                         genreTypeList.stream()
                                 .skip(1)
