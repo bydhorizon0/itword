@@ -5,9 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,6 +15,6 @@ public class MovieImageDTO {
     private String path;
 
     public String getImageURL() {
-        return "/" + path + "/" + imgName;
+        return path != null ? "/" + path + "/" + imgName : "/images/default_image.jpg";
     }
 }

@@ -2,9 +2,6 @@ package org.news.itword.repository;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.dsl.CaseBuilder;
-import com.querydsl.core.types.dsl.EnumExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -12,12 +9,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.news.itword.dto.MovieDTO;
 import org.news.itword.dto.MovieDetailDTO;
+import org.news.itword.dto.MovieImageDTO;
 import org.news.itword.dto.ReplyDTO;
 import org.news.itword.entity.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -66,7 +63,7 @@ public class MovieRepositoryCustomImpl implements MovieRepositoryCustom {
                     .id(movieRes.getId())
                     .title(movieRes.getTitle())
                     .content(movieRes.getContent())
-                    .mainImagePath(movieImageRes.getPath())
+                    .movieImageDTO(movieImageToDTO(movieImageRes))
                     .replyCount(replyCount)
                     .build();
 
@@ -97,9 +94,8 @@ public class MovieRepositoryCustomImpl implements MovieRepositoryCustom {
                 .from(movieRating)
                 .where(movieRating.movie.id.eq(id));
 
-        Tuple tuple = queryFactory.select(movie, movieImage, avgSubquery, countSubquery)
+        Tuple tuple = queryFactory.select(movie, avgSubquery, countSubquery)
                 .from(movie)
-                .leftJoin(movie.movieImages, movieImage)
                 .where(movie.id.eq(id))
                 .fetchOne();
 
@@ -108,9 +104,17 @@ public class MovieRepositoryCustomImpl implements MovieRepositoryCustom {
         }
 
         Movie m = tuple.get(0, Movie.class);
-        MovieImage mi = tuple.get(1, MovieImage.class);
-        double avgRating = Objects.requireNonNullElse(tuple.get(2, Double.class), 0.0);
-        long ratingCount = Objects.requireNonNullElse(tuple.get(3, Long.class), 0L);
+        double avgRating = Objects.requireNonNullElse(tuple.get(1, Double.class), 0.0);
+        long ratingCount = Objects.requireNonNullElse(tuple.get(2, Long.class), 0L);
+
+        // 영화 이미지 조회
+        List<MovieImage> movieImages = queryFactory.selectFrom(movieImage)
+                .join(movieImage.movie, movie)
+                .where(movieImage.movie.id.eq(id))
+                .fetch();
+
+        List<MovieImageDTO> movieImageDTOList = movieImages.stream().map(this::movieImageToDTO)
+                .toList();
 
         // 영화 장르 조회
         QMovieGenre movieGenre = QMovieGenre.movieGenre;
@@ -176,7 +180,7 @@ public class MovieRepositoryCustomImpl implements MovieRepositoryCustom {
                                 .skip(1)
                                 .toList()
                 )
-                .movieImageDTOList(List.of(movieImageToDTO(mi)))
+                .movieImageDTOList(movieImageDTOList)
                 .averageRating(avgRating)
                 .ratingCount(ratingCount)
                 .replyDTOList(result)

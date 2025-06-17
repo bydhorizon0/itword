@@ -18,7 +18,7 @@ public class MovieDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private String mainImagePath;
+    MovieImageDTO movieImageDTO;
 
     private Long replyCount;
 }
