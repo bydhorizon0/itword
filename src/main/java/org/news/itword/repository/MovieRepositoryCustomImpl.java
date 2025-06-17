@@ -29,6 +29,7 @@ public class MovieRepositoryCustomImpl implements MovieRepositoryCustom {
     public Page<MovieDTO> getAllMovies(String keyword, String searchType, Pageable pageable) {
         QMovie movie = QMovie.movie;
         QMovieImage movieImage = QMovieImage.movieImage;
+        QMovieImage subMovieImage = new QMovieImage("subMovieImage");
         QReply reply = QReply.reply;
 
         // 검색 조건 빌더
@@ -44,9 +45,14 @@ public class MovieRepositoryCustomImpl implements MovieRepositoryCustom {
 
         List<Tuple> fetch = queryFactory.select(movie, movieImage, reply.count())
                 .from(movie)
-                .leftJoin(movie.movieImages, movieImage)
-                .fetchJoin()
                 .leftJoin(movie.replies, reply)
+                .leftJoin(movieImage).on(
+                        movieImage.id.eq(
+                                JPAExpressions.select(subMovieImage.id.min())
+                                        .from(subMovieImage)
+                                        .where(subMovieImage.movie.id.eq(movie.id))
+                        )
+                )
                 .where(builder)
                 .groupBy(movie, movieImage)
                 .offset(pageable.getOffset())
