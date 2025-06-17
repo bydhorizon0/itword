@@ -26,7 +26,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public MovieDetailDTO findMovieById(Long id) {
+    public MovieDetailDTO findMovieById(Long id) throws Exception {
         return movieRepository.getMovie(id);
     }
 }

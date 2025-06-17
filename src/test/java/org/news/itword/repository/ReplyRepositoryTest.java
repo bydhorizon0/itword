@@ -44,16 +44,17 @@ class ReplyRepositoryTest {
         });
     }
 
+    @Transactional
+    @Rollback(value = false)
     @Test
     public void insertChildReplies() {
         List<Reply> allReplies = replyRepository.findAll();
-        List<Movie> allMovies = movieRepository.findAll();
         List<Member> allMembers = memberRepository.findAll();
 
         IntStream.rangeClosed(1, 300).forEach(i -> {
             Member member = allMembers.get(RandomGenerator.getDefault().nextInt(allMembers.size()));
-            Movie movie = allMovies.get(RandomGenerator.getDefault().nextInt(allMovies.size()));
             Reply parentReply = allReplies.get(RandomGenerator.getDefault().nextInt(allReplies.size()));
+            Movie movie = parentReply.getMovie();
 
             Reply reply = Reply.builder()
                     .content("CHILD_REPLY...." + i)

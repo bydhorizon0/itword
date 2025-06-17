@@ -82,7 +82,7 @@ public class MovieRepositoryCustomImpl implements MovieRepositoryCustom {
     }
 
     @Override
-    public MovieDetailDTO getMovie(long id) {
+    public MovieDetailDTO getMovie(long id) throws Exception {
         QMovie movie = QMovie.movie;
         QMovieImage movieImage = QMovieImage.movieImage;
         QMovieRating movieRating = QMovieRating.movieRating;
@@ -103,10 +103,14 @@ public class MovieRepositoryCustomImpl implements MovieRepositoryCustom {
                 .where(movie.id.eq(id))
                 .fetchOne();
 
+        if (tuple == null) {
+            throw new Exception("영화를 찾을 수 없습니다. id=" + id);
+        }
+
         Movie m = tuple.get(0, Movie.class);
         MovieImage mi = tuple.get(1, MovieImage.class);
-        double avgRating = tuple.get(2, Double.class);
-        long ratingCount = tuple.get(3, Long.class);
+        double avgRating = Objects.requireNonNullElse(tuple.get(2, Double.class), 0.0);
+        long ratingCount = Objects.requireNonNullElse(tuple.get(3, Long.class), 0L);
 
         // 영화 장르 조회
         QMovieGenre movieGenre = QMovieGenre.movieGenre;
@@ -121,12 +125,43 @@ public class MovieRepositoryCustomImpl implements MovieRepositoryCustom {
         QReply reply = QReply.reply;
         QMember member = QMember.member;
 
-        List<Reply> replies = queryFactory.selectFrom(reply)
+        // 루트 댓글 조회
+        List<Reply> rootReplies = queryFactory.selectFrom(reply)
                 .join(reply.member, member).fetchJoin()
-                .where(reply.movie.id.eq(id))
+                .where(reply.movie.id.eq(id)
+                        .and(reply.parentReply.id.isNull()))
                 .fetch();
 
-        List<ReplyDTO> replyDTOList = replies.stream().map(this::replyToDTO)
+        // 루트 댓글 아이디
+        List<Long> rootReplyIds = rootReplies.stream()
+                .map(Reply::getId)
+                .toList();
+
+        // 루트 댓글에 해당하는 자식 댓글 조회
+        List<Reply> childReplies = queryFactory.selectFrom(reply)
+                .join(reply.member, member).fetchJoin()
+                .where(reply.parentReply.id.in(rootReplyIds))
+                .fetch();
+
+        // 루트 댓글 ID로 자식 댓글 그룹핑
+        Map<Long, List<Reply>> childrenMap = childReplies.stream()
+                .collect(Collectors.groupingBy(childReply -> childReply.getParentReply().getId()));
+
+        // 루트 댓글에 자식 댓글들 매핑
+        List<ReplyDTO> result = rootReplies.stream()
+                .map(rootReply -> {
+                    ReplyDTO rootDTO = replyToDTO(rootReply);
+
+                    // 자식 댓글이 있다면 DTO 리스트로 변환해서 세팅
+                    List<Reply> children = childrenMap.getOrDefault(rootDTO.getId(), Collections.emptyList());
+                    List<ReplyDTO> childDTOs = children.stream()
+                            .sorted(Comparator.comparing(Reply::getCreatedAt))
+                            .map(this::replyToDTO)
+                            .toList();
+
+                    rootDTO.setChildReplies(childDTOs);
+                    return rootDTO;
+                })
                 .toList();
 
         return MovieDetailDTO.builder()
@@ -144,7 +179,7 @@ public class MovieRepositoryCustomImpl implements MovieRepositoryCustom {
                 .movieImageDTOList(List.of(movieImageToDTO(mi)))
                 .averageRating(avgRating)
                 .ratingCount(ratingCount)
-                .replyDTOList(replyDTOList)
+                .replyDTOList(result)
                 .build();
     }
 }

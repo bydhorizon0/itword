@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface MovieRepositoryCustom {
     Page<MovieDTO> getAllMovies(String keyword, String searchType, Pageable pageable);
-    MovieDetailDTO getMovie(long id);
+    MovieDetailDTO getMovie(long id) throws Exception;
 
     default MovieImageDTO movieImageToDTO(MovieImage movieImage) {
         return MovieImageDTO.builder()

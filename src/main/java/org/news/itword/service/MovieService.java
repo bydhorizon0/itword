@@ -7,5 +7,5 @@ import org.news.itword.dto.PageResultDTO;
 
 public interface MovieService {
     PageResultDTO<MovieDTO> getMovies(PageRequestDTO requestDTO);
-    MovieDetailDTO findMovieById(Long id);
+    MovieDetailDTO findMovieById(Long id) throws Exception;
 }

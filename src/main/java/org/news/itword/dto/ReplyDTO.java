@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -17,4 +19,7 @@ public class ReplyDTO {
     private LocalDateTime createdAt, updatedAt;
     private Long parentReplyId;
     private String memberEmail;
+
+    @Builder.Default
+    private List<ReplyDTO> childReplies = new ArrayList<>();
 }

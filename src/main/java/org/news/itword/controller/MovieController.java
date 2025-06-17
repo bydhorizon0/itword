@@ -31,7 +31,7 @@ public class MovieController {
     }
 
     @GetMapping("/{id}")
-    public String movieDetail(@RequestParam("id") Long id, Model model) {
+    public String movieDetail(@RequestParam("id") Long id, Model model) throws Exception {
         MovieDetailDTO movieDetailDTO = movieService.findMovieById(id);
 
         model.addAttribute("movieDetailDTO", movieDetailDTO);
