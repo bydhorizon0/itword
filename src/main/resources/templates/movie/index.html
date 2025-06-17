@@ -45,6 +45,7 @@
 						<div class="card-body">
 							<h5 class="card-title" th:text="${movie.title}">News title</h5>
 							<a th:href="@{/movies/detail(id=${movie.id})}" class="btn btn-outline-primary btn-sm">Read more</a>
+							<span class="badge text-bg-primary" th:text="'[' + ${movie.replyCount} + ']'"></span>
 						</div>
 						<div class="card-footer text-muted small">
 							<span th:text="${#temporals.format(movie.createdAt, 'yyyy-MM-dd')}"></span>
