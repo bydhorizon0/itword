@@ -45,8 +45,18 @@ public class Movie extends BaseEntity {
         genre.setMovie(this);
     }
 
+    public void addGenreAll(Collection<MovieGenre> genres) {
+        genres.addAll(genres);
+        genres.forEach(genre -> genre.setMovie(this));
+    }
+
     public void addRating(MovieRating rating) {
         ratings.add(rating);
         rating.setMovie(this);
+    }
+
+    public void addMovieImage(MovieImage image) {
+        movieImages.add(image);
+        image.setMovie(this);
     }
 }

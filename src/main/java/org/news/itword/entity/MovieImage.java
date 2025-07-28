@@ -16,16 +16,11 @@ public class MovieImage extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String uuid;
-
     private String imgName;
 
     private String path;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     private Movie movie;
-
-    public void setMovie(Movie movie) {
-        this.movie = movie;
-    }
 }
