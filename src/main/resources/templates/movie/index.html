@@ -35,10 +35,17 @@
 
 			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 				<div th:each="movie : ${movies.getDtoList()}" class="bg-white rounded-lg shadow hover:shadow-lg transition">
+					<!-- 이미지가 있는 경우 -->
 					<img th:if="${movie.movieImageDTO != null}"
 						 th:src="${movie.movieImageDTO.imageURL}"
 						 alt="Movie Image"
-						 class="w-full h-auto object-cover rounded-t-lg" />
+						 class="w-full h-[200px] object-cover rounded-t-lg" />
+
+					<!-- 이미지가 없는 경우 -->
+					<div th:if="${movie.movieImageDTO == null}"
+						 class="w-full h-[200px] flex items-center justify-center bg-gray-200 text-gray-600 text-sm font-medium rounded-t-lg">
+						이미지 없음
+					</div>
 
 					<div class="p-4">
 						<h5 class="text-lg font-semibold mb-3" th:text="${movie.title}">News title</h5>
