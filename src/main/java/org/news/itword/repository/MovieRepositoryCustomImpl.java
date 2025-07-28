@@ -3,7 +3,7 @@ package org.news.itword.repository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.jpa.JPQLSubQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -91,12 +91,12 @@ public class MovieRepositoryCustomImpl implements MovieRepositoryCustom {
         QMovieRating movieRating = QMovieRating.movieRating;
 
         // 평균 별점
-        JPQLQuery<Double> avgSubquery = JPAExpressions.select(movieRating.score.avg())
+        JPQLSubQuery<Double> avgSubquery = JPAExpressions.select(movieRating.score.avg())
                 .from(movieRating)
                 .where(movieRating.movie.id.eq(id));
 
         // 별점 개수
-        JPQLQuery<Long> countSubquery = JPAExpressions.select(movieRating.id.count())
+        JPQLSubQuery<Long> countSubquery = JPAExpressions.select(movieRating.id.count())
                 .from(movieRating)
                 .where(movieRating.movie.id.eq(id));
 
