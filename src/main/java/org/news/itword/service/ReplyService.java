@@ -1,4 +1,4 @@
-package org.news.itword.security.service;
+package org.news.itword.service;
 
 import org.news.itword.dto.ReplyRequest;
 import org.news.itword.entity.Member;
