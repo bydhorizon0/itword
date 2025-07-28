@@ -37,6 +37,7 @@ public class MemberDetailsService implements UserDetailsService {
         log.info(member);
 
         MemberAuthDTO memberAuthDTO = new MemberAuthDTO(
+                member.getId(),
                 member.getEmail(),
                 member.getPassword(),
                 member.getRoles().stream()

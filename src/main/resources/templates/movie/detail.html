@@ -1,76 +1,169 @@
 <th:block th:replace="~{/layout/basic :: setContent(~{this::content})}">
-	<th:block th:fragment="content">
-		<div class="container py-5">
-			<h1 class="mb-4" th:text="${movieDetailDTO.title}">영화 제목</h1>
+    <th:block th:fragment="content">
+        <div class="max-w-5xl mx-auto p-6">
 
-			<!-- 평점 / 등록일 -->
-			<div class="d-flex flex-wrap gap-2 mb-4">
-                <span class="badge bg-primary fs-6">
-                  ⭐ 평점: <span th:text="${movieDetailDTO.averageRating}">0.0</span>
-                  (<span th:text="${movieDetailDTO.ratingCount}">0</span>명)
-                </span>
-                <span class="badge bg-info text-dark fs-6">
-                  📅 등록일: <span th:text="${#temporals.format(movieDetailDTO.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span>
-                </span>
-			</div>
+            <h1 class="text-3xl font-bold mb-6" th:text="${movieDetailDTO.title}">영화 제목</h1>
 
-			<div class="mb-4">
-				<p class="lead" th:text="${movieDetailDTO.content}">영화 소개</p>
-			</div>
+            <!-- 평점 / 등록일 -->
+            <div class="flex flex-wrap gap-3 mb-6">
+        <span class="inline-flex items-center bg-blue-600 text-white text-base px-3 py-1 rounded-full shadow">
+          ⭐ 평점: <span class="ml-1 font-semibold" th:text="${movieDetailDTO.averageRating}">0.0</span>
+          (<span class="ml-1" th:text="${movieDetailDTO.ratingCount}">0</span>명)
+        </span>
+                <span class="inline-flex items-center bg-cyan-300 text-cyan-900 text-base px-3 py-1 rounded-full shadow">
+          📅 등록일: <span class="ml-1"
+                       th:text="${#temporals.format(movieDetailDTO.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span>
+        </span>
+            </div>
 
-			<!-- 장르 -->
-			<div class="mb-4">
-				<div class="d-flex flex-wrap gap-2">
-					<span class="badge bg-success fs-6">🎬 주 장르: <span th:text="${movieDetailDTO.mainGenre}">액션</span></span>
-					<span class="badge bg-secondary fs-6"
-					      th:each="genre : ${movieDetailDTO.subGenres}"
-					      th:text="'서브: ' + ${genre}">서브 장르</span>
-				</div>
-			</div>
+            <div class="mb-8">
+                <p class="text-lg leading-relaxed text-gray-700" th:text="${movieDetailDTO.content}">영화 소개</p>
+            </div>
 
-			<!-- 이미지 -->
-			<div class="row mb-5" th:if="${!#lists.isEmpty(movieDetailDTO.movieImageDTOList)}">
-				<div class="col-md-4" th:each="img : ${movieDetailDTO.movieImageDTOList}">
-					<img th:src="${img.imageURL}"
-					     class="img-fluid rounded shadow-sm mb-3"
-					     alt="Movie Image"/>
-				</div>
-			</div>
+            <!-- 장르 -->
+            <div class="mb-8">
+                <div class="flex flex-wrap gap-3">
+          <span class="inline-flex items-center bg-green-600 text-white text-base px-3 py-1 rounded-full shadow">
+            🎬 주 장르: <span class="ml-1 font-semibold" th:text="${movieDetailDTO.mainGenre}">액션</span>
+          </span>
+                    <span th:each="genre : ${movieDetailDTO.subGenres}"
+                          class="inline-flex items-center bg-gray-400 text-gray-900 text-base px-3 py-1 rounded-full shadow"
+                          th:text="'서브: ' + ${genre}">서브 장르</span>
+                </div>
+            </div>
 
-			<hr/>
+            <!-- 이미지 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12"
+                 th:if="${!#lists.isEmpty(movieDetailDTO.movieImageDTOList)}">
+                <div th:each="img : ${movieDetailDTO.movieImageDTOList}">
+                    <img th:src="${img.imageURL}" alt="Movie Image"
+                         class="w-full h-auto rounded-lg shadow-md object-cover"/>
+                </div>
+            </div>
 
-			<h4 class="mb-3">📝 댓글</h4>
-			<div class="list-group">
-				<div class="list-group-item" th:each="reply : ${movieDetailDTO.replyDTOList}">
-					<div class="d-flex justify-content-between">
-						<strong th:text="${reply.memberEmail}">user@example.com</strong>
-						<small class="text-muted"
-						       th:text="${#temporals.format(reply.createdAt, 'yyyy-MM-dd HH:mm')}"></small>
-					</div>
-					<div class="mt-2" th:text="${reply.content}">댓글 내용</div>
-					<div th:if="${reply.parentReplyId != null}" class="mt-1 text-muted small">
-						⤷ 부모 댓글 ID: <span th:text="${reply.parentReplyId}"></span>
-					</div>
+            <hr class="my-8 border-gray-300"/>
 
-					<!-- 대댓글 출력 -->
-					<div class="ms-4 mt-3" th:if="${!#lists.isEmpty(reply.childReplies)}">
-						<div th:each="childReply : ${reply.childReplies}">
-							<div class="border rounded p-2 mb-2">
-								<div class="d-flex justify-content-between">
-									<strong th:text="${childReply.memberEmail}">user@example.com</strong>
-									<small class="text-muted"
-									       th:text="${#temporals.format(childReply.createdAt, 'yyyy-MM-dd HH:mm')}"></small>
-								</div>
-								<div class="mt-2" th:text="${childReply.content}">대댓글 내용</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+            <h4 class="text-xl font-semibold mb-4">📝 댓글</h4>
 
-			<div class="mt-4">
-				<a th:href="@{/movies}" class="btn btn-outline-secondary">← 목록으로</a>
-			</div>
-		</div>
-	</th:block>
+            <form th:action="@{/replies/save}" method="POST" class="mb-10">
+                <input type="hidden" name="movieId" th:value="${movieDetailDTO.id}"/>
+                <input type="hidden" name="memberId" th:value="${memberId}"/>
+
+                <div class="bg-white shadow rounded p-6">
+                    <h5 class="text-lg font-semibold mb-4">💬 댓글 작성</h5>
+
+                    <div class="mb-4">
+                        <label for="content" class="block mb-2 font-medium text-gray-700">내용</label>
+                        <textarea id="content" name="content" rows="3" required
+                                  placeholder="댓글을 입력하세요..."
+                                  class="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button type="submit"
+                                class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded shadow">
+                            <svg class="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M15.854 1.146a.5.5 0 0 0-.707 0L1 15.293V10a.5.5 0 0 0-1 0v6a.5.5 0 0 0 .5.5H7a.5.5 0 0 0 0-1H1.707l14.147-14.147a.5.5 0 0 0 0-.707z"/>
+                            </svg>
+                            등록
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <div>
+                <div th:each="reply : ${movieDetailDTO.replyDTOList}" class="mb-6 bg-white p-4 rounded shadow">
+                    <div class="flex justify-between items-center mb-2">
+                        <strong class="font-semibold text-gray-900"
+                                th:text="${reply.memberEmail}">user@example.com</strong>
+                        <small class="text-gray-500 text-sm"
+                               th:text="${#temporals.format(reply.createdAt, 'yyyy-MM-dd HH:mm')}">시간</small>
+                    </div>
+
+                    <p class="mb-3 text-gray-700" th:text="${reply.content}">댓글 내용</p>
+
+                    <div th:if="${reply.parentReplyId != null}" class="text-sm text-gray-500 mb-3">
+                        ⤷ 부모 댓글 ID: <span th:text="${reply.parentReplyId}"></span>
+                    </div>
+
+                    <!-- 대댓글 달기 버튼 (부모 댓글에만) -->
+                    <div th:if="${reply.parentReplyId == null}">
+                        <button type="button"
+                                class="reply-toggle-btn text-sm text-blue-600 hover:underline"
+                                th:data-reply-id="${reply.id}">
+                            대댓글 달기
+                        </button>
+                    </div>
+
+                    <!-- 대댓글 작성 폼 (숨김) -->
+                    <form th:action="@{/replies/save}" method="POST"
+                          class="reply-form mt-3 hidden border border-gray-300 p-4 rounded shadow-sm"
+                          th:attr="data-reply-id=${reply.id}">
+                        <input type="hidden" name="movieId" th:value="${movieDetailDTO.id}">
+                        <input type="hidden" name="memberId" th:value="${memberId}">
+                        <input type="hidden" name="parentReplyId" th:value="${reply.id}">
+
+                        <textarea name="content" rows="3" class="w-full p-2 border rounded mb-2"
+                                  placeholder="대댓글을 입력하세요..." required></textarea>
+
+                        <div class="flex justify-end">
+                            <button type="submit"
+                                    class="btn btn-primary bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                                등록
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- 대댓글 출력 -->
+                    <div th:if="${!#lists.isEmpty(reply.childReplies)}" class="ml-6 border-l-2 border-gray-300 pl-4">
+                        <div th:each="childReply : ${reply.childReplies}" class="mb-4 p-3 bg-gray-50 rounded shadow-sm">
+                            <div class="flex justify-between items-center mb-1">
+                                <strong class="font-semibold text-gray-900" th:text="${childReply.memberEmail}">user@example.com</strong>
+                                <small class="text-gray-500 text-sm"
+                                       th:text="${#temporals.format(childReply.createdAt, 'yyyy-MM-dd HH:mm')}">시간</small>
+                            </div>
+                            <p class="text-gray-700" th:text="${childReply.content}">대댓글 내용</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <a th:href="@{/movies}"
+                   class="inline-block border border-gray-400 rounded px-4 py-2 text-gray-700 hover:bg-gray-200 transition">←
+                    목록으로</a>
+            </div>
+
+        </div>
+
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const toggleButtons = document.querySelectorAll('.reply-toggle-btn');
+
+                toggleButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const replyId = button.getAttribute('data-reply-id');
+
+                        const form = document.querySelector(`form.reply-form[data-reply-id='${replyId}']`);
+
+                        if (!form) {
+                            return;
+                        }
+
+                        if (form.classList.contains('hidden')) {
+                            form.classList.remove('hidden');
+                            form.style.maxHeight = form.scrollHeight + "px";
+                        } else {
+                            form.style.maxHeight = null;
+                            form.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+        </script>
+
+    </th:block>
 </th:block>
+

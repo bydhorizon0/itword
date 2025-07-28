@@ -18,8 +18,9 @@ public class MemberAuthDTO extends User {
     private String password;
     private LocalDateTime createdAt, updatedAt;
 
-    public MemberAuthDTO(String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public MemberAuthDTO(long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
         super(email, password, authorities);
+        this.id = id;
         this.email = email;
         this.password = password;
     }
