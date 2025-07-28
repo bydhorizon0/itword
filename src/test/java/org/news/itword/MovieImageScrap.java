@@ -1,13 +1,15 @@
 package org.news.itword;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,17 +19,50 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 @SpringBootTest
 public class MovieImageScrap {
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private ResourceLoader resourceLoader;
+
     @Test
-    public void scrap() throws IOException, JSONException {
+    public void getJson() {
+        record Genre(
+                int id,
+                String name
+        ){}
+
+        record GenreResponse(
+                List<Genre> genres
+        ){}
+
+        Resource resource = resourceLoader.getResource("classpath:static/json/genres.json");
+
+        try (InputStream is = resource.getInputStream()) {
+            GenreResponse response = objectMapper.readValue(is, GenreResponse.class);
+
+            response.genres.forEach(genre -> {
+                System.out.println(genre);
+            });
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void scrap() throws IOException {
         var client = new OkHttpClient();
         var futures = new ArrayList<CompletableFuture<Void>>();
 
-        for (int page = 1; page <= 20; page++) {
+        for (int page = 1; page <= 10; page++) {
             Request request = new Request.Builder()
                     .url("https://api.themoviedb.org/3/movie/popular?language=ko-KR&page=" + page)
                     .get()
@@ -37,20 +72,35 @@ public class MovieImageScrap {
 
             Response response = client.newCall(request).execute();
 
-            if (response.isSuccessful()) {
+            if (response.isSuccessful() && response.body() != null) {
                 String json = response.body().string();
-                JSONObject jsonObject = new JSONObject(json);
-                JSONArray results = jsonObject.getJSONArray("results");
+                JsonNode root = objectMapper.readTree(json);
+                JsonNode results = root.get("results");
 
-                for (int i = 0; i < results.length(); i++) {
-                    JSONObject movie = results.getJSONObject(i);
-                    String title = movie.getString("title").replaceAll("[\\\\/:*?\"<>|]", "_");
-                    String posterPath = movie.getString("poster_path");
+                if (results != null && results.isArray()) {
+                    for (JsonNode movie : results) {
+                        String overview = movie.path("overview").asText();
+                        String title = movie.path("title")
+                                .asText()
+                                .replaceAll("[\\\\/:*?\"<>|]", "-");
+                        String posterPath = movie.path("poster_path").asText();
 
-                    if (posterPath != null && !posterPath.isEmpty()) {
-                        String imageUrl = "https://image.tmdb.org/t/p/w500" + posterPath;
-                        String fileName = "images/" + title + ".jpg";
+                        String releaseDate = movie.path("release_date").asText();
+                        List<Integer> genreIds = new ArrayList<>();
 
+                        if (movie.path("genre_ids").isArray()) {
+                            movie.path("genre_ids").forEach(idNode -> {
+                                genreIds.add(idNode.asInt());
+                            });
+                        }
+
+                        if (Stream.of(overview, title, posterPath, releaseDate)
+                                .allMatch(e -> e != null && !e.isEmpty())) {
+
+                            String imageUrl = "https://image.tmdb.org/t/p/w500" + posterPath;
+                            String fileName = "images/" + title + ".jpg";
+
+                        /*
                         CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                             try {
                                 downloadImage(imageUrl, fileName);
@@ -59,6 +109,8 @@ public class MovieImageScrap {
                             }
                         });
                         futures.add(future);
+                         */
+                        }
                     }
                 }
             }

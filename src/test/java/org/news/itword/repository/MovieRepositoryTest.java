@@ -2,7 +2,6 @@ package org.news.itword.repository;
 
 import org.junit.jupiter.api.Test;
 import org.news.itword.dto.MovieDTO;
-import org.news.itword.dto.MovieDetailDTO;
 import org.news.itword.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -52,7 +51,6 @@ class MovieRepositoryTest {
         for (File file : imageFiles) {
             String fileName = file.getName();
             String title = fileName.substring(0, fileName.lastIndexOf("."));
-            String uuid = UUID.randomUUID().toString();
 
             Movie movie = Movie.builder()
                     .title(title)
@@ -62,7 +60,6 @@ class MovieRepositoryTest {
             movieRepository.save(movie);
 
             MovieImage movieImage = MovieImage.builder()
-                    .uuid(uuid)
                     .imgName(fileName)
                     .movie(movie)
                     .path("images")
@@ -131,13 +128,6 @@ class MovieRepositoryTest {
         for (MovieDTO movie : movies) {
             System.out.println(movie);
         }
-    }
-
-    @Test
-    public void getMovie() {
-        MovieDetailDTO movie = movieRepository.getMovie(7L);
-
-        System.out.println(movie);
     }
 
 }
