@@ -16,7 +16,7 @@
 
     <!-- Top Navbar -->
     <nav class="bg-gray-900 text-white shadow-md p-4 flex justify-between items-center">
-        <a href="#" th:href="@{/movies}" class="text-xl font-bold">Itword</a>
+        <a href="#" th:href="@{/movies}" class="text-xl font-bold">Cinema zone</a>
         <div class="space-x-4">
             <a th:href="@{/logout}" sec:authorize="isAuthenticated()" class="hover:underline">Sign out</a>
             <a th:href="@{/login}" sec:authorize="isAnonymous()" class="hover:underline">Log in</a>
@@ -27,18 +27,9 @@
         <!-- Sidebar -->
         <aside class="w-64 bg-white border-r    border-gray-200 p-6 hidden md:block">
             <nav class="space-y-2">
-                <a th:href="@{/movies}" class="block text-gray-700 hover:text-blue-600 font-medium">🎬 영화</a>
-                <a href="#" class="block text-gray-700 hover:text-blue-600 font-medium">📝 게시판</a>
+                <a th:href="@{/movies}" class="block text-gray-700 hover:text-blue-600 font-medium">🎬 영화 목록</a>
+<!--                <a href="#" class="block text-gray-700 hover:text-blue-600 font-medium">📝 게시판</a>-->
             </nav>
-
-            <div class="mt-10">
-                <h6 class="text-gray-500 uppercase text-sm font-semibold mb-2">Saved Reports</h6>
-                <ul class="space-y-1">
-                    <li>
-                        <a href="#" class="text-gray-600 hover:text-blue-600 text-sm">📄 Current month</a>
-                    </li>
-                </ul>
-            </div>
         </aside>
 
         <!-- Main Content -->
