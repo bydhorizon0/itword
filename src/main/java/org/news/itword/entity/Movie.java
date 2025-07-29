@@ -18,8 +18,11 @@ public class Movie extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
 
+    @Lob
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     // 영화 장르 필드
