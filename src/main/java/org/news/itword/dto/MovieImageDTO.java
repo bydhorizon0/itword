@@ -15,6 +15,6 @@ public class MovieImageDTO {
     private String path;
 
     public String getImageURL() {
-        return path != null ? "/" + path + "/" + imgName : "/images/default_image.jpg";
+        return path != null ? "/" + path : "";
     }
 }
